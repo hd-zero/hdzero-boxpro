@@ -10,6 +10,7 @@
 #include "core/msp_displayport.h"
 #include "core/osd.h"
 #include "driver/dm5680.h"
+#include "driver/lcd.h"
 #include "driver/dm6302.h"
 #include "driver/hardware.h"
 #include "driver/it66121.h"
@@ -53,6 +54,10 @@ void app_switch_to_menu() {
         IT66121_init();
 
     system_script(REC_STOP_LIVE);
+
+    // Restore image settings from av module
+    LCD_Brightness(g_setting.image.oled);
+    Set_Contrast(g_setting.image.contrast);
 }
 
 void app_exit_menu() {
@@ -76,6 +81,12 @@ void app_exit_menu() {
 void app_switch_to_analog(bool is_avin) {
     Source_AV(is_avin);
 
+    // Solve LCD residual image
+    if (is_avin == 0) {
+        LCD_Brightness(7);
+        Set_Contrast(14);
+    }
+
     dvr_update_vi_conf(VR_720P50);
     osd_fhd(0);
     osd_show(true);
@@ -93,6 +104,11 @@ void app_switch_to_analog(bool is_avin) {
 }
 
 void app_switch_to_hdmi_in() {
+
+    // Restore image settings from av module
+    LCD_Brightness(g_setting.image.oled);
+    Set_Contrast(g_setting.image.contrast);
+
     Source_HDMI_in();
     IT66121_close();
     sleep(2);
@@ -126,6 +142,10 @@ void app_switch_to_hdmi_in() {
 //    false = user selected from auto scan page
 void app_switch_to_hdzero(bool is_default) {
     int ch;
+
+    // Restore image settings from av module
+    LCD_Brightness(g_setting.image.oled);
+    Set_Contrast(g_setting.image.contrast);
 
     if (is_default) {
         ch = g_setting.scan.channel - 1;

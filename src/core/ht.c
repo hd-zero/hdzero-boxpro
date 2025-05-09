@@ -93,7 +93,11 @@ static void detect_motion(bool is_moving) {
 #endif
         if (is_moving) {
             // we got motion, turn oled back on, start over
-            LCD_Brightness(g_setting.image.oled);
+            if (g_source_info.source == SOURCE_AV_MODULE) {
+                LCD_Brightness(7);
+            } else {
+                LCD_Brightness(g_setting.image.oled);
+            }
             state = OLED_MD_DETECTING;
             cnt = 0;
         }
@@ -137,7 +141,11 @@ static void detect_motion(bool is_moving) {
                 RTC6715_Open(1);
             }
             LOGI("OLED ON from protection.");
-            LCD_Brightness(g_setting.image.oled);
+            if (g_source_info.source == SOURCE_AV_MODULE) {
+                LCD_Brightness(7);
+            } else {
+                LCD_Brightness(g_setting.image.oled);
+            }
             LCD_ON(1);
             state = OLED_MD_DETECTING;
             cnt = 0;
